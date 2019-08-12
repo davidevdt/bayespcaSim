@@ -6,9 +6,9 @@ The method (Bayes PCA) is compared with the sparse PCA specification of the mode
 
 ### Run the simulations
 In order to run the simulations: 
-1. Install the required R packages: 
-  * devtools::install_github("erichson/spca")
-  * devtools::install_github("davidevdt/bayespca")
-1. Launch ```main.R``` ; in this file, simulation parameters and plotting functions can be specified 
-  * modify the simulation parameters by changing the values that appear before ```runSim()```
-  * select the type of results you want to visualize: ```plotN = 1``` for Tucker congruenc, ```plotN = 2``` for proportion of correct zeros/nonzeros
+ 1. Install the required R packages: 
+   * devtools::install_github("erichson/spca")
+   * devtools::install_github("davidevdt/bayespca")
+ 1. Launch ```main.R``` ; in this file, simulation parameters and plotting functions can be specified 
+   * modify the simulation parameters by changing the values that appear before ```runSim()```
+   * select the type of results you want to visualize: ```plotN = 1``` for Tucker congruenc, ```plotN = 2``` for proportion of correct zeros/nonzeros
