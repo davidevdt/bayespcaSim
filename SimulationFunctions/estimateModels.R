@@ -154,7 +154,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				alphaInvGamma <- vbpcaPars[i, 1]
 				betaInvGamma <- vbpcaPars[i, 2]
 				
-				ctrl <- bayespca::vbpca_control(center = FALSE, scale. = FALSE,
+				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
 								   seed = 71, plot.lowerbound = FALSE,
 								   hpdi = FALSE, probHPDI = 0.9, 
@@ -180,7 +180,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					tuckMat <- mod[[1]]
 				}else{
 				
-					ctrl <- bayespca::vbpca_control(center = FALSE, scale. = FALSE,
+					ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
 								   seed = 71, plot.lowerbound = FALSE,
 								   hpdi = FALSE, probHPDI = 0.9, 
@@ -235,7 +235,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				alphaInvGamma <- vbpcaPars[i, 1]
 				betaInvGamma <- vbpcaPars[i, 2]
 				
-				ctrl <- bayespca::vbpca_control(center = FALSE, scale. = FALSE,
+				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
 								   seed = 71, plot.lowerbound = FALSE,
 								   hpdi = TRUE, probHPDI = probHPDI, 
