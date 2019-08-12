@@ -127,7 +127,7 @@ allConditions <- simRes$allConditions
 
 
 aggrElbos <- groupIndex(globalResults)
-aggrElbos <- adjustAggregated(aggrElbos0b, normalize = TRUE )
+aggrElbos <- adjustAggregated(aggrElbos, normalize = TRUE )
 		
 	
 # Labels for the conditions 
