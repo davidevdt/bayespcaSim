@@ -147,8 +147,8 @@ if( plotN == 1 ){
 	ggplot(globalResults, aes(x = Method, y = Tucker)) + 
 		geom_boxplot(aes(fill = Method), alpha = 0.5) + 
 		scale_fill_brewer(palette = "Set1") + 
-		geom_line(data=aggrElbos, aes(x=Method, y=RecErr,group=1,color=Type), alpha = 0.8,col = "deepskyblue", size = 1) + 
-		geom_point(data=aggrElbos, aes(x=Method, y=RecErr), alpha = 0.8, size = 2) + 
+		geom_line(data=aggrElbos, aes(x=Method, y=RecErr, group=1), alpha = 0.8,col = "deepskyblue", size = 1) + 
+		geom_point(data=aggrElbos, aes(x=Method, y=RecErr, color=Type), alpha = 0.8, size = 2) + 
 		 scale_colour_manual(values = c("deepskyblue"), labels=c( 'Reconstruction Error') ) +
 		facet_grid(I~Noise+Sparsity, 
 					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs )) + 
@@ -172,8 +172,8 @@ if( plotN == 1 ){
 	ggplot(globalResults, aes(x = Method, y = PropCorrect)) + 
 		geom_boxplot(aes(fill = Method), alpha = 0.5) + 
 		scale_fill_brewer(palette = "Set1") + 
-		geom_line(data=aggrElbos, aes(x=Method, y=RecErr,group=1,color=Type), alpha = 0.8,col = "deepskyblue", size = 1) + 
-		geom_point(data=aggrElbos, aes(x=Method, y=RecErr), alpha = 0.8, size = 2) + 
+		geom_line(data=aggrElbos, aes(x=Method, y=RecErr, group=1), alpha = 0.8,col = "deepskyblue", size = 1) + 
+		geom_point(data=aggrElbos, aes(x=Method, y=RecErr, color = Type), alpha = 0.8, size = 2) + 
 		 scale_colour_manual(values = c("deepskyblue"), labels=c( 'Reconstruction Error') ) +
 		facet_grid(I~Noise+Sparsity, 
 					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs )) + 				
