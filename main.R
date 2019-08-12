@@ -16,19 +16,19 @@ source("https://raw.githubusercontent.com/davidevdt/bayespcaSim/master/loadFunct
 
 
 # Select final plots ------------------------------------------------------------------------------------
-plotN <- 2 									# 1. For Tucker congruence; 2. For % correct zero/nonzeros
+plotN <- 2 							# 1. For Tucker congruence; 2. For % correct zero/nonzeros
 
 # Simulation Conditions ----------------------------------------------------------------------------------  
 nsim <- 30
 Icond <- c(25, 50, 100)						# Sample size conditions 
-Jcond <- 50									# Number of variables   	
+Jcond <- 50							# Number of variables   	
 noiseCond <- c(0.1, 0.3)					# Prop. Noise conditions
 sparsityCond <- c(0.3, 0.8)					# Prop. Sparsity conditions	
 
 
 
 # Componenents' Parameters ------------------------------------------------------------------------------
-D = 3										# Number of components   
+D = 3								# Number of components   
 varComp <- c(200, 100, 50)					# Variance of principal components
 
 
@@ -51,7 +51,7 @@ betaIG <- c(  1, 5, 10, 20)
 # Hyperparameters (Stochastic Variable Selection)
 SVS <- TRUE 							# If SVS == FALSE: use HPD intervals
 propSpike <- 1e-04						# proportion of prior 'spike' variance 
-priorInclusion <- rep(0.5, D) 			# prior inclusion probabilities 
+priorInclusion <- rep(0.5, D) 					# prior inclusion probabilities 
 beta1pi <- 1 
 beta2pi <- 1 
 threshold <- 0.50						# Probability threshold to mark elements of W as 0's 
