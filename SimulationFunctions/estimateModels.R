@@ -170,7 +170,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 									 priorvar = priorvar, SVS = SVS, 
 									 priorInclusion = priorInclusion, 
 									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = FALSE )							   
+									 control = ctrl, suppressWarnings = TRUE )							   
 				
 				
 				probZeroMat <- mod[[9]]				
@@ -196,7 +196,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 									 priorvar = priorvar, SVS = FALSE, 
 									 priorInclusion = priorInclusion, 
 									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = FALSE )		
+									 control = ctrl, suppressWarnings = TRUE )		
 
 					tuckMat <- modB[[1]]
 				
@@ -251,7 +251,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 									 priorvar = priorvar, SVS = SVS, 
 									 priorInclusion = priorInclusion, 
 									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = FALSE )							   
+									 control = ctrl, suppressWarnings = TRUE )							   
 				
 				tuckMat <- mod[[1]]
 				estZeroMat <- zeroHPDI( mod[[5]] )
