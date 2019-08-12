@@ -22,8 +22,8 @@ plotN <- 2 							# 1. For Tucker congruence; 2. For % correct zero/nonzeros
 nsim <- 30
 Icond <- c(25, 50, 100)						# Sample size conditions 
 Jcond <- 50							# Number of variables   	
-noiseCond <- c(0.1, 0.3)					# Prop. Noise conditions
-sparsityCond <- c(0.3, 0.8)					# Prop. Sparsity conditions	
+noiseCond <- c(0.05, 0.25)					# Prop. Noise conditions
+sparsityCond <- c(0.5, 0.9)					# Prop. Sparsity conditions	
 
 
 
