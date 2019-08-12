@@ -128,7 +128,7 @@ allConditions <- simRes$allConditions
 
 aggrElbos <- groupIndex(globalResults)
 aggrElbos <- adjustAggregated(aggrElbos, normalize = TRUE )
-		
+aggrElbos$Type <- rep("Reconstruction Error", nrow(aggrElbos))	
 	
 # Labels for the conditions 
 I.labs <- paste0("I = ", Icond)
