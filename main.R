@@ -39,7 +39,7 @@ varComp <- c(200, 100, 50)					# Variance of principal components
 alpha <- c(0.,.0001, .001, .01, .1, .5, .9, 1., 2.)					# Lasso 
 beta <- c(0., .0001, .001, .01, .1, .5, .9, 1)						# Ridge 
 numFolds <- 5 
-sdRule <- TRUE														# Select parameters with S.E. rule
+sdRule <- TRUE										# Select parameters with S.E. rule
 
 
 # Tuning parameter (bayesPCA - parameters for InverseGamma prior)
