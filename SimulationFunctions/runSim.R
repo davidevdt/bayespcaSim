@@ -5,9 +5,9 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					typeTuck, selType, propSpike, 
 					alphaIG, betaIG, alpha, beta, 
 					SVS, normalise, beta1pi, beta2pi, 
-					updatetau, priorvar, 
-					priorInclusion, global.var, sdRule,
-					useOrig, origElbo, probHPDI ){					
+					updatetau, priorvar, priorInclusion, 
+		   			global.var, sdRule, useOrig, origElbo, 
+		   			probHPDI ){					
 				
 	# Simulation conditions 
 	allConditions <- expand.grid(I = Icond, J = Jcond, percNoise = noiseCond,
