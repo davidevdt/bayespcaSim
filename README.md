@@ -5,7 +5,7 @@ The method (Bayes PCA) is compared with the sparse PCA specification of the mode
 
 
 ### Run the simulations
-In order to run the simulations: 
+To run the simulations: 
  1. Install the required R packages: 
      * ```devtools::install_github("erichson/spca")```
      * ```devtools::install_github("davidevdt/bayespca")```
