@@ -5,3 +5,4 @@ source("https://raw.githubusercontent.com/davidevdt/bayespcaSim/master/DataGener
 source("https://raw.githubusercontent.com/davidevdt/bayespcaSim/master/spcaFunctions/eigencv.R")
 source("https://raw.githubusercontent.com/davidevdt/bayespcaSim/master/SimulationFunctions/estimateModels.R")
 source("https://raw.githubusercontent.com/davidevdt/bayespcaSim/master/SimulationFunctions/runSim.R")
+

@@ -14,7 +14,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 	PercAll <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim ) 
 	PercZeros <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim ) 
 	PercOnes <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim ) 
-	ELBOS <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim )
 	RECERR <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim )
 	MODEL <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim )
 	avgMatrix <- rep(list( matrix(0, J, D) ), (nrow(vbpcaPars) + 1) )  
@@ -132,7 +131,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		PercZeros[1,b] <- sum( mod$loadings[ind0] == 0 ) / length(ind0) 
 		PercOnes[1,b] <- sum( mod$loadings[ind1] != 0 ) / length(ind1)
 		PercAll[1,b] <- sum( ( (mod$loadings != 0 ) * 1 ) == zeroMat ) / (J * D)
-		ELBOS[1,b] <- NA 
 		
 		RECERR[1,b] <- recErr(Xsel, mod$loadings, mod$transform)
 		
@@ -215,13 +213,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				
 				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
 				
-				
-				if( !origElbo & !useOrig ){
-					ELBOS[(i+1),b] <- modB$elbo 				
-				}else{
-					ELBOS[(i+1),b] <- mod$elbo 
-				}
-
 				MODEL[(i+1), b] <- paste0("IG(",alphaInvGamma,",",betaInvGamma,")")		
 				avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( (probZeroMat > threshold ) * 1 ) 
 			
@@ -268,7 +259,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				
 				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
 
-				ELBOS[(i+1),b] <- mod$elbo 
 				MODEL[(i+1), b] <- paste0("IG(",alphaInvGamma,",",betaInvGamma,")")		
 				avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( ( estZeroMat != 0 ) * 1 ) 
 			
@@ -288,8 +278,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 						'PropCorrect' = c( t(PercAll) ), 
 						'PercZeros' = c( t(PercZeros) ), 
 						'PercOnes' = c( t(PercOnes) ),
-						'RecErr' = c( t(RECERR) ),
-						'ELBO' = c( t(ELBOS)  )	
+						'RecErr' = c( t(RECERR) )
 					)
 					  
 						

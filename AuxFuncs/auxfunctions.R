@@ -98,59 +98,32 @@ TuckerCoef <- function(MatrixA, MatrixB){
 
 
 
-# Function that takes the  data frame with sim. results and creates a new one for True/False positive rate 
-# makeTNRateData <- function(res){
-	
-#	NRows <- nrow(res)
-#	PosRate <- res %>% select(I,J,Sparsity,Noise,Method,PercOnes,ELBO)
-#	NegRate <- res %>% select(I,J,Sparsity,Noise,Method,PercZeros,ELBO)
-	
-#	Weights <- c(rep("Non-zero Weights", NRows) , rep("Zero Weights", NRows) )
-	
-#	colnames(PosRate)[6] <- "PropCorrect"
-#	colnames(NegRate)[6] <- "PropCorrect"
-	
-#	retData <- rbind(PosRate, NegRate)
-#	retData <- data.frame(retData, "Weights" = Weights)
-	
-#	retData
+# Function the returns average, rescaled ELBO's given a dataframe results 
+# groupELBOs <- function(res, crit = c("Method", "I", "J", "Sparsity", "Noise")){
 
-#} 
+# 	crit2 <- paste0("res$",crit)
+#	lst <- vector("list", length(crit))
+#	for( i in 1:length(lst) ){
+#		lst[[i]] <- eval(parse(text = crit2[i]))
+#	}
 
+#	ElboInd <- length(crit) + 1 
+	
+	
+#	ret <- aggregate(res$ELBO, by = lst, mean)
+#	rescaled <- (1 - ret[!is.na(ret[,ElboInd]),ElboInd] / min(ret[!is.na(ret[,ElboInd]),ElboInd]) ) 
+#	reRescaled <- rescaled + (1 - max(rescaled)) 
+	
+#	ret[!is.na(ret[,ElboInd]), ElboInd] <-  reRescaled
+#	colnames(ret) <- c(crit, "ELBO" )
+#	ret 
+# } 
 
 
 
 
 # Function the returns average, rescaled ELBO's given a dataframe results 
-groupELBOs <- function(res, crit = c("Method", "I", "J", "Sparsity", "Noise")){
-
-	crit2 <- paste0("res$",crit)
-	lst <- vector("list", length(crit))
-	for( i in 1:length(lst) ){
-		lst[[i]] <- eval(parse(text = crit2[i]))
-	}
-
-	ElboInd <- length(crit) + 1 
-	
-	
-	ret <- aggregate(res$ELBO, by = lst, mean)
-	rescaled <- (1 - ret[!is.na(ret[,ElboInd]),ElboInd] / min(ret[!is.na(ret[,ElboInd]),ElboInd]) ) 
-	reRescaled <- rescaled + (1 - max(rescaled)) 
-	
-	ret[!is.na(ret[,ElboInd]), ElboInd] <-  reRescaled
-	colnames(ret) <- c(crit, "ELBO" )
-	ret 
-} 
-
-
-
-
-# Function the returns average, rescaled ELBO's given a dataframe results 
-groupIndex <- function(res, crit = c("Method", "I", "J", "Sparsity", "Noise"), posNegRate = FALSE, ELBO = FALSE){
-
-	if( posNegRate == TRUE ){
-		crit <- c(crit, "Weights")
-	}
+groupIndex <- function(res, crit = c("Method", "I", "J", "Sparsity", "Noise")){
 
 	crit2 <- paste0("res$",crit)
 	lst <- vector("list", length(crit))
@@ -161,111 +134,19 @@ groupIndex <- function(res, crit = c("Method", "I", "J", "Sparsity", "Noise"), p
 	
 	Ind <- length(crit) + 1 
 	
-	if( ELBO ){
-		ret <- aggregate(res$ELBO, by = lst, mean)
 
-		rescaled <- (1 - ret[!is.na(ret[,Ind]),Ind] / min(ret[!is.na(ret[,Ind]),Ind]) ) 
-		reRescaled <- rescaled + (1 - max(rescaled)) 
-	
-		ret[!is.na(ret[,Ind]), Ind] <-  reRescaled
+	ret <- aggregate(res$RecErr, by = lst, mean)
 		
-		colnames(ret) <- c(crit, "ELBO" )
-	}else{
-		ret <- aggregate(res$RecErr, by = lst, mean)
-		
-		# rescaled <- 1 - (ret[,Ind] / max(ret[,Ind]))
-		reRescaled <-  (ret[,Ind] / max(ret[,Ind])) 
-		# reRescaled <- 1 - rescaled 
-		# reRescaled <- ret[,Ind] / max( ret[ ,Ind]  )
-		
-		ret[,Ind] <- reRescaled
-		colnames(ret) <- c(crit, "RecErr")
-	}
+	# reRescaled <-  (ret[,Ind] / max(ret[,Ind])) 
+	# ret[,Ind] <- reRescaled
+	colnames(ret) <- c(crit, "RecErr")
+
 
 
 	
 	ret 
 } 
 
-
-
-### Adjust "aggregated" data 
-adjustAggregated <- function(res, critMatrix = NULL, ELBO = FALSE, normalize = FALSE, a = 0.5, b = 1 ){
-
-	if( ELBO ){
-		IndFilt <- which( res$Method != "spca"  )
-	}else{
-		IndFilt <- 1:nrow(res)
-	}
-	
-	
-	IndMeth <- which(colnames(res) == "Method")
-	Ind <- ncol(res)
-	Ind0 <- (1:(Ind-1))[-IndMeth]
-	
-	
-	ELBs <- res[IndFilt, Ind]
-
-	if( is.null(critMatrix) ){
-		aggr <- unique(res[,-c(IndMeth, Ind)])
-		
-		if(!normalize){
-			for( j in 1:nrow(aggr) ){	
-			
-				tmp <- t(apply(res[,Ind0], 1, function(x) x == aggr[j,]) )
-				selInd <- which(apply(tmp, 1, sum) == length(Ind0) ) 
-				
-				
-				mx <- max(ELBs[IndFilt %in% selInd])
-				ELBs[IndFilt %in% selInd] <- 1 + (ELBs[IndFilt %in% selInd] - mx) 
-				
-			}
-		}else{
-			for( j in 1:nrow(aggr) ){	
-			
-				tmp <- t(apply(res[,Ind0], 1, function(x) x == aggr[j,]) )
-				selInd <- which(apply(tmp, 1, sum) == length(Ind0) ) 
-				
-				
-				mx <- max(ELBs[IndFilt %in% selInd])
-				mn <- min(ELBs[IndFilt %in% selInd])
-				ELBs[IndFilt %in% selInd] <- a + ( ( (ELBs[IndFilt %in% selInd] - mn)*(b - a) ) / (mx - mn) )	
-		
-			}
-		}		
-	}else{
-		aggr <- as.numeric(unique( critMatrix  ))
-		
-		if( !normalize ){
-			for( j in 1:length(aggr) ){	
-			
-				tmp <- t(apply(critMatrix, 2, function(x) x == aggr[j]) )
-				selInd <- which(tmp == TRUE ) 
-				
-				
-				mx <- max(ELBs[IndFilt %in% selInd])
-				ELBs[IndFilt %in% selInd] <- 1 + (ELBs[IndFilt %in% selInd] - mx) 
-				
-			}
-		}else{
-			for( j in 1:length(aggr) ){	
-			
-				tmp <- t(apply(critMatrix, 2, function(x) x == aggr[j]) )
-				selInd <- which(tmp == TRUE ) 
-				
-				
-				mx <- max(ELBs[IndFilt %in% selInd])
-				mn <- min(ELBs[IndFilt %in% selInd])
-				ELBs[IndFilt %in% selInd] <- a + ( ( (ELBs[IndFilt %in% selInd] - mn)*(b - a) ) / (mx - mn) )	
-				
-			}		
-		}
-	}
-		
-	res[IndFilt,Ind] <- ELBs
-	res
-	
-}
 
 
 # Function that calculates reconstruction error 
