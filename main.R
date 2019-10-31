@@ -53,9 +53,9 @@ betaIG <- c(  1, 5, 10, 20)
 # Hyperparameters (Stochastic Variable Selection)
 SVS <- TRUE 							# If SVS == FALSE: use HPD intervals
 propSpike <- 1e-04						# proportion of prior 'spike' variance 
-priorInclusion <- rep(0.5, D) 					# prior inclusion probabilities 
-beta1pi <- 1 
-beta2pi <- 1 
+priorInclusion <- rep(0.5, D) 			# prior inclusion probabilities 
+beta1pi <- 1 							# For uniform Beta prior set beta1pi = 1
+beta2pi <- 1 							# For uniform Beta prior set beta2pi = 1
 threshold <- 0.50						# Probability threshold to mark elements of W as 0's 
 
 
@@ -93,17 +93,9 @@ simRes <- runSim( nsim, Icond, Jcond, noiseCond, sparsityCond,
 				  
 
 
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
 
-# Plot the results ----------------------------------------------------------------------------------  
-# Prepare Datasets for ggplot				
+
+### RESULTS --------------------------------------------------------------------------------------------
 globalResults <- simRes$globalResults 
 globalResults$Method <- factor(globalResults$Method, levels = as.character(unique(globalResults$Method)) )
 
@@ -123,8 +115,13 @@ globalResults <- globalResults %>% filter(
 globalAvgMatrix <- simRes$globalAvgMatrix 
 allConditions <- simRes$allConditions
 
+				  
+				  
+				  
+				  
 
-
+# Plot the results ----------------------------------------------------------------------------------  
+# Prepare Datasets for ggplot				
 aggrRecErr <- groupIndex(globalResults)
 	
 # Labels for the conditions 
@@ -147,13 +144,13 @@ if( plotN == 1 ){
 		facet_grid(I~Noise+Sparsity, 
 					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs )) + 
 		ylab("Tucker Congruence") + 
-		theme(strip.text.x = element_text(face = "bold", colour = "blue")) +
-		theme(strip.text.y = element_text(face = "bold", colour = "blue")) +
+		theme(strip.text.x = element_text(colour = "blue")) +
+		theme(strip.text.y = element_text(colour = "blue")) +
 		theme(legend.position = "none") +
 		scale_x_discrete(position = "bottom") + 
 		theme(axis.title.x=element_blank(),
 		axis.ticks.x=element_line(size=1), 
-		axis.title = element_text(face = "bold"),
+		axis.text.x = element_text(face="bold"),
 		legend.title = element_blank(), 
 		legend.text = element_text(face="plain",size=10)	)+ 
 		theme(legend.position = "right") +
@@ -169,43 +166,43 @@ if( plotN == 1 ){
 		facet_grid(I~Noise+Sparsity, 
 					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs )) + 				
 		ylab("Proportion of Correctly Identified Weights") + 
-		theme(strip.text.x = element_text(face = "bold", colour = "blue")) +
-		theme(strip.text.y = element_text(face = "bold", colour = "blue")) +
+		theme(strip.text.x = element_text(colour = "blue")) +
+		theme(strip.text.y = element_text(colour = "blue")) +
 		theme(legend.position = "none") +
 		scale_x_discrete(position = "bottom") + 
 		theme(axis.title.x=element_blank(),
 		axis.ticks.x=element_line(size=1), 
-		axis.title = element_text(face = "bold"),
+		axis.text.x = element_text(face="bold"),
 		legend.title = element_blank(), 
 		legend.text = element_text(face="plain",size=10)	)+ 
 		theme(legend.position = "right") +
 		guides(fill = guide_legend(nrow = 7, override.aes = list(size = 0.5))) + 
 		ggtitle("Proportion of Correctly Identified Weights")+
-		theme(plot.title = element_text(hjust = 0.5, face="bold")) 
+		theme(plot.title = element_text(hjust = 0.5, face="bold"))
 		
 }else{
 
 	ggplot(globalResults, aes(x = Method, y = RecErr)) + 
 		geom_boxplot(aes(fill = Method), alpha = 0.5) + 
 		scale_fill_brewer(palette = "Set1") + 
-		geom_line(data=aggrRecErr, aes(x=Method, y=RecErr, group=1), alpha = 0.7,col = "deepskyblue", size = 1) + 
-		geom_point(data=aggrRecErr, aes(x=Method, y=RecErr), alpha = 0.8, size = 2, color = "deepskyblue") + 
-		 scale_colour_manual(values = c("deepskyblue"), labels=c( 'Average Reconstruction Error') ) +
+		# geom_line(data=aggrRecErr, aes(x=Method, y=RecErr, group=1), alpha = 0.7,col = "deepskyblue", size = 1) + 
+		# geom_point(data=aggrRecErr, aes(x=Method, y=RecErr), alpha = 0.8, size = 2, color = "deepskyblue") + 
+		# scale_colour_manual(values = c("deepskyblue"), labels=c( 'Average Reconstruction Error') ) +
 		facet_grid(I~Noise+Sparsity, 
-					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs )) + 				
+					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs ), scales = "free_y") + 				
 		ylab("Reconstruction Error") + 
-		theme(strip.text.x = element_text(face = "bold", colour = "blue")) +
-		theme(strip.text.y = element_text(face = "bold", colour = "blue")) +
+		theme(strip.text.x = element_text(colour = "blue")) +
+		theme(strip.text.y = element_text(colour = "blue")) +
 		theme(legend.position = "none") +
 		scale_x_discrete(position = "bottom") + 
 		theme(axis.title.x=element_blank(),
 		axis.ticks.x=element_line(size=1), 
-		axis.title = element_text(face = "bold"),
-		legend.title = element_blank()	)+ 
-		guides(fill = guide_legend(nrow = 1, override.aes = list(size = 1))) + 
+		axis.text.x = element_text(face="bold"),
+		legend.title = element_blank(), 
+		legend.text = element_text(face="plain",size=10)	)+ 
+		theme(legend.position = "right") +
+		guides(fill = guide_legend(nrow = 7, override.aes = list(size = 0.5))) + 
 		ggtitle("Reconstruction Error")+
-		theme(plot.title = element_text(hjust = 0.5, face="bold")) 
+		theme(plot.title = element_text(hjust = 0.5, face="bold"))
 		
 }
-
-				
