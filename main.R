@@ -1,7 +1,7 @@
 # main: Simulation Study ----------------------------------------------------------------------------------
-# devtools::install_github("erichson/spca")
+# devtools::install_github("cran/elasticnet")
 # devtools::install_github("davidevdt/bayespca")
-library(sparsepca)
+library(elasticnet)
 library(dplyr)
 library(bayespca)
 library(ggplot2	)
