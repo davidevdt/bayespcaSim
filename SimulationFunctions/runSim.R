@@ -3,7 +3,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					D, varComp, numFolds, 
 					threshold, maxiter, tolerance, 
 					typeTuck, selType, propSpike, 
-					alphaIG, betaIG, alpha, beta, 
+					alphaIG, betaIG, beta, 
 					SVS, normalise, beta1pi, beta2pi, 
 					updatetau, priorvar, priorInclusion, 
 		   			global.var, sdRule, useOrig, origElbo, 
@@ -16,7 +16,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 	row.names(allConditions) <- 1:nrow(allConditions)
 
 	# spca and InverseGamma hyperparameters 
-	spcaPars <- expand.grid(alpha = alpha, beta = beta)
+	spcaPars <- expand.grid(beta = beta)
 	vbpcaPars <- expand.grid(alpha = alphaIG, beta = betaIG)
 
 	# Zero/NonZero matrix 

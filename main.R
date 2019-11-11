@@ -38,10 +38,9 @@ varComp <- c(200, 100, 50)					# Variance of principal components
 
 # Hyperparameters -------------------------------------------------------------------------
 # Tuning parameters (spca)
-alpha <- c(0.,1e-010,1e-07,1e-06, 1e-05, 1e-04,1e-03, 1e-02, 1e-01, .5, .9, 1., 2., 3., 5., 10.,20.)		# Lasso 
-beta <- c(0.,1e-010,1e-07,1e-06, 1e-05, 1e-04,1e-03, 1e-02, 1e-01, .5, .9, 1., 2., 3., 5., 10.,20.) 		# Ridge 
+beta <- c(0.,1e-010,1e-07,1e-06, 1e-05, 1e-04,1e-03, 1e-02, 1e-01) 		# Ridge grid penalty
 numFolds <- 5 
-sdRule <- TRUE										# Select parameters with S.E. rule
+sdRule <- TRUE															# Select parameters with S.E. rule
 
 
 # Tuning parameter (bayesPCA - parameters for InverseGamma prior)
@@ -63,7 +62,8 @@ threshold <- 0.50						# Probability threshold to mark elements of W as 0's
 
 # Other controls ----------------------------------------------------------------------------------   
 maxiter <- 1e+05						 
-tolerance <- 1e-05		 
+tolerance <- 1e-02						# Convergence criterion -- Set to 1e-02 otherwise oracle elasticnet is too slow in case of high sparsity 
+										# (decrease it for more precise results)
 typeTuck <- 2 							# If typeTuck == 2: set to 0 elements with Pr(inclusion) < 0.5 
 selType <- 2 							# If selType == 1: work with scaled observed data 
 normalise <- FALSE
@@ -84,7 +84,7 @@ simRes <- runSim( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					D, varComp, numFolds, 
 					threshold, maxiter, tolerance, 
 					typeTuck, selType, propSpike, 
-					alphaIG, betaIG, alpha, beta, 
+					alphaIG, betaIG, beta, 
 					SVS, normalise, beta1pi, beta2pi, 
 					updatetau, priorvar, 
 					priorInclusion, global.var, sdRule,
