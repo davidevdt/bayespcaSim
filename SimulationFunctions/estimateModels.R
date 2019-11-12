@@ -227,7 +227,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		PercOnes[1,b] <- sum( mod$loadings[ind1] != 0 ) / length(ind1)
 		PercAll[1,b] <- sum( ( (mod$loadings != 0 ) * 1 ) == zeroMat ) / (J * D)
 		RECERR[1,b] <- recErr(Xsel, mod$loadings, P)
-		MODEL[1, b] <- "spca2"
+		MODEL[1, b] <- "spca"
 		avgMatrix[[1]] <- avgMatrix[[1]] + ( (mod$loadings != 0 ) * 1 ) 
 			
 
