@@ -153,58 +153,58 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		
 		beta_grid <- unique( spcaPars$beta )		
 		
-			if( sdRule == FALSE ){
-				minMse <- Inf 
-				selPar <- NULL
+		if( sdRule == FALSE ){
+			minMse <- Inf 
+			selPar <- NULL
 					
 					
-				for( i in 1:length(beta_grid) ){
+			for( i in 1:length(beta_grid) ){
 					
-					set.seed(71)
-					newMSE <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
-									  beta = beta_grid[i], nFolds = numFolds,
-									  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
-									  verbose = FALSE)$MSE
-					if(newMSE < minMse){
-						minMse <- newMSE 
-						selPar <- i 
-					}	
-				}
-				cat("Selected tuning set: ", selPar, "\n" )
-				betaSel <- beta_grid[selPar]
-
-			}else{
-				mse <- rep(0, length(beta_grid))
-				minMse <- Inf
-				sdMse <- 0 
-				selPar <- NULL
-					
-					
-				for( i in 1:length(beta_grid) ){
-					
-					set.seed(71)
-					eCV <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
-									  beta = beta_grid[i], nFolds = numFolds,
-									  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
-									  verbose = FALSE)
-					mse[i] <- eCV$MSE
-						
-					if(mse[i] < minMse){
-						minMse <- mse[i]
-						sdMse <- eCV$sdMSE
-					}	
-										
-				}
-					
-				indx <- which(mse <= minMse + sdMse )
-				selPar <- max(indx)
-					
-				cat("Selected tuning set: ", selPar, "\n" )
-				betaSel <- beta_grid[selPar]		
-				
-				
+				set.seed(71)
+				newMSE <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
+								  beta = beta_grid[i], nFolds = numFolds,
+								  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
+								  verbose = FALSE)$MSE
+				if(newMSE < minMse){
+					minMse <- newMSE 
+					selPar <- i 
+				}	
 			}
+			cat("Selected tuning set: ", selPar, "\n" )
+			betaSel <- beta_grid[selPar]
+
+		}else{
+			mse <- rep(0, length(beta_grid))
+			minMse <- Inf
+			sdMse <- 0 
+			selPar <- NULL
+					
+					
+			for( i in 1:length(beta_grid) ){
+					
+				set.seed(71)
+				eCV <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
+								  beta = beta_grid[i], nFolds = numFolds,
+								  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
+								  verbose = FALSE)
+				mse[i] <- eCV$MSE
+						
+				if(mse[i] < minMse){
+					minMse <- mse[i]
+					sdMse <- eCV$sdMSE
+				}	
+										
+			}
+					
+			indx <- which(mse <= minMse + sdMse )
+			selPar <- max(indx)
+					
+			cat("Selected tuning set: ", selPar, "\n" )
+			betaSel <- beta_grid[selPar]		
+				
+				
 		}
+		
 			
 		# Estimation 
 		print( sprintf('Estimation') )
