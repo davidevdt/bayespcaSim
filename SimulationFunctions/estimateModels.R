@@ -148,7 +148,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		
 		n_loadings <- apply(zeroMat, 2, sum) 
 		
-		if( I <= J  ){
 		# Tuning
 		print( sprintf('Tuning...') )	
 		
@@ -205,8 +204,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				
 				
 			}
-		}else{	# No ridge penalty needed if I > J
-			betaSel <- 0
 		}
 			
 		# Estimation 
