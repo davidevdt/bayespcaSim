@@ -211,7 +211,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		set.seed(71)
 
 		mod <- elasticnet::spca(x = Xsel, K = D, para = n_loadings, lambda = betaSel,
-								sparse = "penalty", max.iter = maxiter, 
+								sparse = "varnum", max.iter = maxiter, 
 							   eps.conv = tolerance, trace = FALSE, 
 							   type = "predictor", use.corr = FALSE)	
 
