@@ -1,13 +1,14 @@
 # runSim: read simulation parameters and create conditions  --------------------------------------------------------------
 runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					D, varComp, numFolds, 
-					threshold, maxiter, tolerance, 
-					typeTuck, selType, propSpike, 
+					threshold, maxiter, tolerance_elastic_net,
+					tolerance_vbpca, 
+					typeTuck, selType,
 					alphaIG, betaIG, beta, 
-					SVS, normalise, beta1pi, beta2pi, 
-					updatetau, priorvar, priorInclusion, 
-		   			global.var, sdRule, useOrig, origElbo, 
-		   			probHPDI ){					
+					normalise, updatetau,
+					global.var, sdRule,
+					useOrig, origElbo, hpdi, probHPDI ){
+				  					
 				
 	# Simulation conditions 
 	allConditions <- expand.grid(I = Icond, J = Jcond, percNoise = noiseCond,
@@ -59,13 +60,12 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 		####################  Run the simulations and get the results ######################### 
 		res <- estimateModels( nsim, I, J, D, zeroMat, percNoise, varComp, 
 					   vbpcaPars, spcaPars, numFolds, 
-					   threshold, maxiter, tolerance, 
+					   threshold, maxiter, tolerance_elastic_net,
+					   tolerance_vbpca, 
 					   typeTuck, selType,
-					   propSpike, SVS, normalise, 
-					   beta1pi, beta2pi, 
-					   updatetau, priorvar, priorInclusion, 
+					   normalise, updatetau,  
 					   global.var, sdRule,
-					   useOrig, origElbo, probHPDI )
+					   useOrig, origElbo, hpdi, probHPDI )
 						 	 
 		
 		# Condition names  

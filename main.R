@@ -44,34 +44,30 @@ sdRule <- TRUE															# Select parameters with S.E. rule
 
 
 # Tuning parameter (bayesPCA - parameters for InverseGamma prior)
-alphaIG <- c(  1, 5, 10, 20, 50 )
-betaIG <- c(  1, 5, 10, 20)
+alphaIG <- c(  0, 0.001, 0.1, 0.5, 1 )
+betaIG <- c(  0.001, 0.1, 0.5, 1)
 
 
 
-# Hyperparameters (Stochastic Variable Selection)
-SVS <- TRUE 							# If SVS == FALSE: use HPD intervals
-propSpike <- 1e-04						# proportion of prior 'spike' variance 
-priorInclusion <- rep(0.5, D) 			# prior inclusion probabilities 
-beta1pi <- 1 							# For uniform Beta prior set beta1pi = 1
-beta2pi <- 1 							# For uniform Beta prior set beta2pi = 1
-threshold <- 0.50						# Probability threshold to mark elements of W as 0's 
+# Precision threshold (bayesPCA - cutoff value that evaluates when prior precisions are "too large")
+threshold <- 50								# Precision value threshold to mark elements of W as 0's 
 
 
 
 
 # Other controls ----------------------------------------------------------------------------------   
 maxiter <- 1e+05						 
-tolerance <- 1e-02						# Convergence criterion -- Set to 1e-02 otherwise oracle elasticnet is too slow in case of high sparsity 
-										# (decrease it for more precise results)
-typeTuck <- 2 							# If typeTuck == 2: set to 0 elements with Pr(inclusion) < 0.5 
-selType <- 2 							# If selType == 1: work with scaled observed data 
+tolerance_elastic_net <- 1e-02						# Convergence criterion -- Set to 1e-02 otherwise oracle elasticnet is too slow in case of high sparsity 
+													# (decrease it for more precise results)
+tolerance_vbpca <- 1e-02							# Convergence criterion for Bayes PCA 
+typeTuck <- 2 										# If typeTuck == 2: set to 0 elements with Pr(inclusion) < 0.5 
+selType <- 2 										# If selType == 1: work with scaled observed data 
 normalise <- FALSE
-updatetau <- FALSE 
-priorvar <- 'invgamma'
+updatetau <- TRUE 
 global.var <- FALSE  
-useOrig <- TRUE							# If useOrig == FALSE : use weight matrix estimated without SVS 
-origElbo <- TRUE						# If origElbo == FALSE : use Elbo computed without SVS
+useOrig <- TRUE										# If useOrig == FALSE : use weight matrix without variable selection
+origElbo <- TRUE									# If origElbo == FALSE : use Elbo computed without variable selection 
+hpdi <- FALSE 										# If hpdi == TRUE: perform variable selection with posterior density intervals 
 probHPDI <- 0.9							
 
 
@@ -82,13 +78,14 @@ probHPDI <- 0.9
 # Run the simulations ----------------------------------------------------------------------------------  
 simRes <- runSim( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					D, varComp, numFolds, 
-					threshold, maxiter, tolerance, 
-					typeTuck, selType, propSpike, 
+					threshold, maxiter, tolerance_elastic_net,
+					tolerance_vbpca, 
+					typeTuck, selType,
 					alphaIG, betaIG, beta, 
-					SVS, normalise, beta1pi, beta2pi, 
-					updatetau, priorvar, 
-					priorInclusion, global.var, sdRule,
-					useOrig, origElbo, probHPDI )
+					normalise, updatetau,
+					global.var, sdRule,
+					useOrig, origElbo, 
+					hpdi, probHPDI )
 				  
 				  
 
@@ -99,25 +96,20 @@ simRes <- runSim( nsim, Icond, Jcond, noiseCond, sparsityCond,
 globalResults <- simRes$globalResults 
 globalResults$Method <- factor(globalResults$Method, levels = as.character(unique(globalResults$Method)) )
 
-globalResults2 <- globalResults 
-globalResults <- globalResults %>% filter(
-	Method == "IG(1,1)" |		
-	Method == "IG(10,5)" | 
-	Method == "IG(20,5)" | 
-	Method == "IG(5,1)" |  
-	Method == "IG(50,20)" |
-	Method == "spca"
-)
-
-
+#globalResults2 <- globalResults 
+#globalResults <- globalResults %>% filter(
+#	Method == "IG(1,1)" |		
+#	Method == "IG(10,5)" | 
+#	Method == "IG(20,5)" | 
+#	Method == "IG(5,1)" |  
+#	Method == "IG(50,20)" |
+#	Method == "spca"
+#)
 
 
 globalAvgMatrix <- simRes$globalAvgMatrix 
 allConditions <- simRes$allConditions
-
-				  
-				  
-				  
+			  
 				  
 
 # Plot the results ----------------------------------------------------------------------------------  

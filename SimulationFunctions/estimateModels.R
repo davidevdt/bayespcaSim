@@ -1,13 +1,13 @@
 # runModels: estimate PCA models with input condition --------------------------------------------------------------
 # Data are generated during the simulation iterations 
 estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp, 
-					   vbpcaPars, spcaPars, numFolds, 
-					   threshold, maxiter, tolerance, 
-					   typeTuck = 1, selType = 2,
-					   propSpike, SVS, normalise, 
-					   beta1pi, beta2pi, 
-					   updatetau, priorvar, priorInclusion, global.var,
-					   sdRule, useOrig = TRUE, origElbo = TRUE, probHPDI){ 
+							   vbpcaPars, spcaPars, numFolds, 
+							   threshold, maxiter, tolerance_elastic_net,
+							   tolerance_vbpca, 
+							   typeTuck, selType,
+							   normalise, updatetau,  
+							   global.var, sdRule,
+							   useOrig, origElbo, hpdi, probHPDI ){
 					   	  
 	# Store the results 
 	Tucker <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim ) 
@@ -76,7 +76,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		#		set.seed(71)
 		#		newMSE <- EigenCV(X = Xsel, alpha = spcaPars[i, ]$alpha, 
 		#						  beta = spcaPars[i, ]$beta, nFolds = numFolds,
-		#						  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
+		#						  D = D, maxIt = maxiter, tol = tolerance_elastic_net, scaleDat = FALSE,
 		#						  verbose = FALSE)$MSE
 		#		if(newMSE < minMse){
 		#			minMse <- newMSE 
@@ -98,7 +98,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		#		set.seed(71)
 		#		eCV <- EigenCV(X = Xsel, alpha = spcaPars[i, ]$alpha, 
 		#						  beta = spcaPars[i, ]$beta, nFolds = numFolds,
-		#						  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
+		#						  D = D, maxIt = maxiter, tol = tolerance_elastic_net, scaleDat = FALSE,
 		#						  verbose = FALSE)
 		#		mse[i] <- eCV$MSE
 		#		
@@ -124,7 +124,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		# set.seed(71)
 		# mod <- sparsepca::spca(X = Xsel, k = D, alpha = alphaSel, beta = betaSel,
 		#					   center = FALSE, scale = FALSE, max_iter = maxiter, 
-		#					   tol = tolerance, verbose = FALSE )
+		#					   tol = tolerance_elastic_net, verbose = FALSE )
         #
         #
 		# Tucker[1,b] <- TuckerCoef(Wmat, mod$loadings)$tucker_value  
@@ -163,7 +163,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				set.seed(71)
 				newMSE <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
 								  beta = beta_grid[i], nFolds = numFolds,
-								  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
+								  D = D, maxIt = maxiter, tol = tolerance_elastic_net, scaleDat = FALSE,
 								  verbose = FALSE)$MSE
 				if(newMSE < minMse){
 					minMse <- newMSE 
@@ -185,7 +185,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				set.seed(71)
 				eCV <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
 								  beta = beta_grid[i], nFolds = numFolds,
-								  D = D, maxIt = maxiter, tol = tolerance, scaleDat = FALSE,
+								  D = D, maxIt = maxiter, tol = tolerance_elastic_net, scaleDat = FALSE,
 								  verbose = FALSE)
 				mse[i] <- eCV$MSE
 						
@@ -212,7 +212,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 
 		mod <- elasticnet::spca(x = Xsel, K = D, para = n_loadings, lambda = betaSel,
 								sparse = "varnum", max.iter = maxiter, 
-							   eps.conv = tolerance, trace = FALSE, 
+							   eps.conv = tolerance_elastic_net, trace = FALSE, 
 							   type = "predictor", use.corr = FALSE)	
 
 		XTX <- t(Xsel) %*% Xsel
@@ -234,131 +234,48 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		######################################## vbpca  ########################################
 		print( sprintf('### 2. vbpca model: ###') )		
 		
-		if( SVS ){
-		
-			for( i in 1:nrow(vbpcaPars) ){
-				print( sprintf('   par %1d of %1d', i, nrow(vbpcaPars) ) )
+		for( i in 1:nrow(vbpcaPars) ){
+			print( sprintf('   par %1d of %1d', i, nrow(vbpcaPars) ) )
 				
-				alphaInvGamma <- vbpcaPars[i, 1]
-				betaInvGamma <- vbpcaPars[i, 2]
+			alphaGamma <- vbpcaPars[i, 1]
+			betaGamma <- vbpcaPars[i, 2]
 				
-				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
-								   svdStart = TRUE, normalise = normalise, 
-								   seed = 71, plot.lowerbound = FALSE,
-								   hpdi = FALSE, probHPDI = 0.9, 
-								   alphatau = alphaInvGamma, betatau = betaInvGamma,
-								   beta1pi = beta1pi, beta2pi = beta2pi, 
-								   v0 = propSpike )	
-
-
-				set.seed(71)
-				mod <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter, 
-									 tolerance = tolerance, verbose = FALSE, 
-									 tau = 1, updatetau = updatetau, 
-									 priorvar = priorvar, SVS = SVS, 
-									 priorInclusion = priorInclusion, 
+			set.seed(71)
+			mod <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter,
+									center = FALSE, scalecorrection = -1, 
+									svdStart = TRUE, normalise = normalise,
+									seed = 71, plot.lowerbound = FALSE, 
+									hpdi = hpdi, probHPDI = probHPDI,
+									alphatau = alphaGamma, betatau = betaGamma,
+									tolerance = tolerance_vbpca, verbose = FALSE, 
+									tau = 1, updatetau = updatetau,									
 									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = TRUE )							   
-				
-				
-				probZeroMat <- mod[[9]]				
-				
-				
-				if( useOrig ){
-					tuckMat <- mod[[1]]
-				}else{
-				
-					ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
-								   svdStart = TRUE, normalise = normalise, 
-								   seed = 71, plot.lowerbound = FALSE,
-								   hpdi = FALSE, probHPDI = 0.9, 
-								   alphatau = alphaInvGamma, betatau = betaInvGamma,
-								   beta1pi = beta1pi, beta2pi = beta2pi, 
-								   v0 = propSpike )	
-
-
-					set.seed(71)
-					modB <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter, 
-									 tolerance = tolerance, verbose = FALSE, 
-									 tau = 1, updatetau = updatetau, 
-									 priorvar = priorvar, SVS = FALSE, 
-									 priorInclusion = priorInclusion, 
-									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = TRUE )		
-
-					tuckMat <- modB[[1]]
-				
-				}
-				
-				if( typeTuck == 2 ){
-					tuckMat[probZeroMat <= threshold] <- 0  
-				}
-				
-				Tucker[(i+1),b] <- TuckerCoef(Wmat, tuckMat)$tucker_value  
-				PercZeros[(i+1),b] <- sum( probZeroMat[ind0] <= threshold ) / length(ind0) 
-				PercOnes[(i+1),b] <- sum( probZeroMat[ind1] > threshold ) / length(ind1)
-				PercAll[(i+1),b] <- sum( ( (probZeroMat > threshold ) * 1 ) == zeroMat ) / (J * D)
-				
-				
-				
-				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
-				
-				
-
-
-				MODEL[(i+1), b] <- paste0("IG(",alphaInvGamma,",",betaInvGamma,")")		
-				avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( (probZeroMat > threshold ) * 1 ) 
+									 control = ctrl, suppressWarnings = TRUE )							
 			
-			}
+			tuckMat <- mod[[1]]
 			
-		}else{
-		
-			for( i in 1:nrow(vbpcaPars) ){
-				print( sprintf('   par %1d of %1d', i, nrow(vbpcaPars) ) )
-				
-				alphaInvGamma <- vbpcaPars[i, 1]
-				betaInvGamma <- vbpcaPars[i, 2]
-				
-				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
-								   svdStart = TRUE, normalise = normalise, 
-								   seed = 71, plot.lowerbound = FALSE,
-								   hpdi = TRUE, probHPDI = probHPDI, 
-								   alphatau = alphaInvGamma, betatau = betaInvGamma,
-								   beta1pi = beta1pi, beta2pi = beta2pi, 
-								   v0 = propSpike )	
-
-
-				set.seed(71)
-				mod <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter, 
-									 tolerance = tolerance, verbose = FALSE, 
-									 tau = 1, updatetau = updatetau, 
-									 priorvar = priorvar, SVS = SVS, 
-									 priorInclusion = priorInclusion, 
-									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = TRUE )							   
-				
-				tuckMat <- mod[[1]]
+			if( hpdi ){
 				estZeroMat <- zeroHPDI( mod[[5]] )
+			}else{
+				estZeroMat <- matrix(1, nrow(tuckMat), ncol(tuckMat)) 
+				estZeroMat[plotheatmap(mod, matrix_type = "W", bound_tau = threshold)$W == 0] <- 0 			
+			}
+				
+			if( typeTuck == 2 ){
+				tuckMat[estZeroMat == 0] <- 0
+			}
+				
+			Tucker[(i+1),b] <- TuckerCoef(Wmat, tuckMat)$tucker_value  
+			PercZeros[(i+1),b] <- sum( estZeroMat == 0 ) / length(ind0) 
+			PercOnes[(i+1),b] <- sum( estZeroMat != 0 ) / length(ind1)
+			PercAll[(i+1),b] <- sum( ( (estZeroMat != 0 ) * 1 ) == zeroMat ) / (J * D)
+				
+			RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
 
-				
-				if( typeTuck == 2 ){
-					tuckMat[estZeroMat == 0] <- 0  
-				}
-				
-				Tucker[(i+1),b] <- TuckerCoef(Wmat, tuckMat)$tucker_value  
-				PercZeros[(i+1),b] <- sum( estZeroMat == 0 ) / length(ind0) 
-				PercOnes[(i+1),b] <- sum( estZeroMat != 0 ) / length(ind1)
-				PercAll[(i+1),b] <- sum( ( (estZeroMat != 0 ) * 1 ) == zeroMat ) / (J * D)
-				
-				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
-
-				MODEL[(i+1), b] <- paste0("IG(",alphaInvGamma,",",betaInvGamma,")")		
-				avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( ( estZeroMat != 0 ) * 1 ) 
+			MODEL[(i+1), b] <- paste0("IG(",alphaGamma,",",betaGamma,")")		
+			avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( ( estZeroMat != 0 ) * 1 ) 
 			
-			}	
-		
-		
-		}
+		}		
 	
 	}
 					  
@@ -376,7 +293,6 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					  
 						
 	return( list(retDataFrame, avgMatrix ) )
-
 
 
 }
