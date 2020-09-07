@@ -3,7 +3,7 @@
 # devtools::install_github("davidevdt/bayespca")
 library(elasticnet)
 library(dplyr)
-library(bayespca)
+# library(bayespca)
 library(ggplot2	)
 
 
