@@ -1,14 +1,13 @@
 # runSim: read simulation parameters and create conditions  --------------------------------------------------------------
 runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					D, varComp, numFolds, 
-					threshold, maxiter, tolerance_elastic_net,
-					tolerance_vbpca, 
-					typeTuck, selType,
+					threshold, maxiter, tolerance, 
+					typeTuck, selType, propSpike, 
 					alphaIG, betaIG, beta, 
-					normalise, updatetau,
-					global.var, sdRule,
-					useOrig, origElbo, hpdi, probHPDI ){
-				  					
+					SVS, normalise, beta1pi, beta2pi, 
+					updatetau, priorvar, priorInclusion, 
+		   			global.var, sdRule, useOrig, origElbo, 
+		   			probHPDI, tau_par, alphaFactor, betaFactor ){					
 				
 	# Simulation conditions 
 	allConditions <- expand.grid(I = Icond, J = Jcond, percNoise = noiseCond,
@@ -16,7 +15,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 	allConditions <- allConditions[order(allConditions$I),]
 	row.names(allConditions) <- 1:nrow(allConditions)
 
-	# spca and InverseGamma hyperparameters 
+	# spca and InvGamma hyperparameters 
 	spcaPars <- expand.grid(beta = beta)
 	vbpcaPars <- expand.grid(alpha = alphaIG, beta = betaIG)
 
@@ -28,9 +27,10 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 		zeroMatList[[as.character(sparsityCond[sp])]] <- list()
 		for( j in 1:length(Jcond)  ){
 				nameList <- as.character(Jcond[j])
-				zeroMatList[[as.character(sparsityCond[sp])]][[nameList]] <- genZeroMat(Jcond[j], D, sparsityCond[sp])
+				zeroMatList[[as.character(sparsityCond[sp])]][[nameList]] <- genZeroMat(Jcond[j], D, sparsityCond[sp])		
 		}
 	}
+	
 
 
 
@@ -60,12 +60,13 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 		####################  Run the simulations and get the results ######################### 
 		res <- estimateModels( nsim, I, J, D, zeroMat, percNoise, varComp, 
 					   vbpcaPars, spcaPars, numFolds, 
-					   threshold, maxiter, tolerance_elastic_net,
-					   tolerance_vbpca, 
+					   threshold, maxiter, tolerance, 
 					   typeTuck, selType,
-					   normalise, updatetau,  
+					   propSpike, SVS, normalise, 
+					   beta1pi, beta2pi, 
+					   updatetau, priorvar, priorInclusion, 
 					   global.var, sdRule,
-					   useOrig, origElbo, hpdi, probHPDI )
+					   useOrig, origElbo, probHPDI, tau_par )
 						 	 
 		
 		# Condition names  
