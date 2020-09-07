@@ -7,7 +7,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					SVS, normalise, beta1pi, beta2pi, 
 					updatetau, priorvar, priorInclusion, 
 		   			global.var, sdRule, useOrig, origElbo, 
-		   			probHPDI ){					
+		   			probHPDI, tau_par, alphaFactor, betaFactor ){					
 				
 	# Simulation conditions 
 	allConditions <- expand.grid(I = Icond, J = Jcond, percNoise = noiseCond,
@@ -15,7 +15,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 	allConditions <- allConditions[order(allConditions$I),]
 	row.names(allConditions) <- 1:nrow(allConditions)
 
-	# spca and InverseGamma hyperparameters 
+	# spca and InvGamma hyperparameters 
 	spcaPars <- expand.grid(beta = beta)
 	vbpcaPars <- expand.grid(alpha = alphaIG, beta = betaIG)
 
@@ -27,9 +27,10 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 		zeroMatList[[as.character(sparsityCond[sp])]] <- list()
 		for( j in 1:length(Jcond)  ){
 				nameList <- as.character(Jcond[j])
-				zeroMatList[[as.character(sparsityCond[sp])]][[nameList]] <- genZeroMat(Jcond[j], D, sparsityCond[sp])
+				zeroMatList[[as.character(sparsityCond[sp])]][[nameList]] <- genZeroMat(Jcond[j], D, sparsityCond[sp])		
 		}
 	}
+	
 
 
 
@@ -65,7 +66,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					   beta1pi, beta2pi, 
 					   updatetau, priorvar, priorInclusion, 
 					   global.var, sdRule,
-					   useOrig, origElbo, probHPDI )
+					   useOrig, origElbo, probHPDI, tau_par )
 						 	 
 		
 		# Condition names  

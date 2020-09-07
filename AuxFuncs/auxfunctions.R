@@ -22,23 +22,19 @@ scaleX <- function(X, center = FALSE, scalingFactor = -1){
 
 }
 
-
-
-
-
 # Make variance of unimportant components 
 varFunc <- function(varComps, J, error, scaleFirst = 2){
 
 	D <- length(varComps) 
-	otherVars <- exp( seq(log(1e-05), log(mean(varComps)/scaleFirst),
+	otherVars <- exp( seq(log(0.0001), log(min(varComps)/scaleFirst),
 					  length.out = J - D ) )[(J-D):1]
-	scaleFactor <- (error*sum(varComps)) / ((1-error)*sum(otherVars))
+	# scaleFactor <- (error*sum(varComps)) / ((1-error)*sum(otherVars))
+	scaleFactor <- (-error*sum(varComps) / (error - 1)) / sum(otherVars)
 
 	return( c(varComps, otherVars*scaleFactor)  )
 				
 
 }
-
 
 ## Function that normalises the columns of a matrix 
 Normalise <- function( M ){

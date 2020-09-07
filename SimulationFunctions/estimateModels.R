@@ -7,7 +7,8 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					   propSpike, SVS, normalise, 
 					   beta1pi, beta2pi, 
 					   updatetau, priorvar, priorInclusion, global.var,
-					   sdRule, useOrig = TRUE, origElbo = TRUE, probHPDI){ 
+					   sdRule, useOrig = TRUE, origElbo = TRUE, probHPDI, 
+					   tau_par){ 
 					   	  
 	# Store the results 
 	Tucker <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim ) 
@@ -29,21 +30,22 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 		######################################## Data Generation ########################################
 		# --> 1. Generate loading matrix 
 		set.seed(387 + b)	
+		# variances <- varFunc(varComp, J = J, error = percNoise)
+		# dg <- datageneration(I, structMat=zeroMat, variances)
+		
+		
 		gl <- genLoading(zeroMat, maxIt = 1e+04)
 		
-		P <- gl[[1]]
 		if(gl$converged == 0){
 			stop("Loading matrix not created.")
 		}
+		P <- gl[[1]]
 		
 		# --> 2. Generate data 
 		set.seed(388 + b)
 		dg <- datageneration( I, P, percNoise, varComp )
 		Xobs <- dg[[1]]
-		Wmat <- dg[[3]]		
-		
-		
-
+		Wmat <- dg[[3]][,1:D]
 		
 		# Select observed/scaled data 
 		if( selType == 1 ){
@@ -159,7 +161,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					
 					
 			for( i in 1:length(beta_grid) ){
-					
+				# print(spritf('i'))
 				set.seed(71)
 				newMSE <- EigenCVel_net(X = Xsel, alpha = n_loadings, 
 								  beta = beta_grid[i], nFolds = numFolds,
@@ -240,7 +242,17 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				print( sprintf('   par %1d of %1d', i, nrow(vbpcaPars) ) )
 				
 				alphaInvGamma <- vbpcaPars[i, 1]
-				betaInvGamma <- vbpcaPars[i, 2]
+				betaInvGamma <- vbpcaPars[i, 2] 
+							
+				if( alphaInvGamma == 0){
+					doPriorvar <- "fixed"
+					doUpdate <- FALSE 
+					doTau <- tau_par
+				} else {
+					doPriorvar <- priorvar 
+					doUpdate <- updatetau
+					doTau <- 1 
+				}
 				
 				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
@@ -254,8 +266,8 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				set.seed(71)
 				mod <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter, 
 									 tolerance = tolerance, verbose = FALSE, 
-									 tau = 1, updatetau = updatetau, 
-									 priorvar = priorvar, SVS = SVS, 
+									 tau = doTau, updatetau = doUpdate, 
+									 priorvar = doPriorvar, SVS = SVS, 
 									 priorInclusion = priorInclusion, 
 									 global.var = global.var, 
 									 control = ctrl, suppressWarnings = TRUE )							   
@@ -268,6 +280,16 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					tuckMat <- mod[[1]]
 				}else{
 				
+					if( alphaInvGamma == 0){
+						doPriorvar <- "fixed"
+						doUpdate <- FALSE 
+						doTau <- tau_par 
+					} else {
+						doPriorvar <- priorvar 
+						doUpdate <- updatetau
+						doTau <- 1 
+					}
+					
 					ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
 								   seed = 71, plot.lowerbound = FALSE,
@@ -280,8 +302,8 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					set.seed(71)
 					modB <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter, 
 									 tolerance = tolerance, verbose = FALSE, 
-									 tau = 1, updatetau = updatetau, 
-									 priorvar = priorvar, SVS = FALSE, 
+									 tau = doTau, updatetau = doUpdate, 
+									 priorvar = doPriorvar, SVS = FALSE, 
 									 priorInclusion = priorInclusion, 
 									 global.var = global.var, 
 									 control = ctrl, suppressWarnings = TRUE )		
@@ -301,63 +323,12 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				
 				
 				
-				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
-				
-				
+				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)				
 
-
-				MODEL[(i+1), b] <- paste0("IG(",alphaInvGamma,",",betaInvGamma,")")		
+				MODEL[(i+1), b] <- paste0("G(",vbpcaPars[i, 1],",",vbpcaPars[i, 2],")")		
 				avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( (probZeroMat > threshold ) * 1 ) 
 			
-			}
-			
-		}else{
-		
-			for( i in 1:nrow(vbpcaPars) ){
-				print( sprintf('   par %1d of %1d', i, nrow(vbpcaPars) ) )
-				
-				alphaInvGamma <- vbpcaPars[i, 1]
-				betaInvGamma <- vbpcaPars[i, 2]
-				
-				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
-								   svdStart = TRUE, normalise = normalise, 
-								   seed = 71, plot.lowerbound = FALSE,
-								   hpdi = TRUE, probHPDI = probHPDI, 
-								   alphatau = alphaInvGamma, betatau = betaInvGamma,
-								   beta1pi = beta1pi, beta2pi = beta2pi, 
-								   v0 = propSpike )	
-
-
-				set.seed(71)
-				mod <- bayespca::vbpca( X = Xsel, D = D, maxIter = maxiter, 
-									 tolerance = tolerance, verbose = FALSE, 
-									 tau = 1, updatetau = updatetau, 
-									 priorvar = priorvar, SVS = SVS, 
-									 priorInclusion = priorInclusion, 
-									 global.var = global.var, 
-									 control = ctrl, suppressWarnings = TRUE )							   
-				
-				tuckMat <- mod[[1]]
-				estZeroMat <- zeroHPDI( mod[[5]] )
-
-				
-				if( typeTuck == 2 ){
-					tuckMat[estZeroMat == 0] <- 0  
-				}
-				
-				Tucker[(i+1),b] <- TuckerCoef(Wmat, tuckMat)$tucker_value  
-				PercZeros[(i+1),b] <- sum( estZeroMat == 0 ) / length(ind0) 
-				PercOnes[(i+1),b] <- sum( estZeroMat != 0 ) / length(ind1)
-				PercAll[(i+1),b] <- sum( ( (estZeroMat != 0 ) * 1 ) == zeroMat ) / (J * D)
-				
-				RECERR[(i+1),b] <- recErr(Xsel, tuckMat, mod$P)
-
-				MODEL[(i+1), b] <- paste0("IG(",alphaInvGamma,",",betaInvGamma,")")		
-				avgMatrix[[i+1]] <- avgMatrix[[i+1]] + ( ( estZeroMat != 0 ) * 1 ) 
-			
-			}	
-		
-		
+			}		
 		}
 	
 	}

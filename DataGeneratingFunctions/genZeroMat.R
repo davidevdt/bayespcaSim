@@ -9,5 +9,4 @@ genZeroMat <- function(J, D, sparsityprop){
 	
 	return( retMat )
 	
-	
 }
