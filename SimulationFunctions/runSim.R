@@ -7,7 +7,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					SVS, normalise, beta1pi, beta2pi, 
 					updatetau, priorvar, priorInclusion, 
 		   			global.var, sdRule, useOrig, origElbo, 
-		   			probHPDI, tau_par, alphaFactor, betaFactor ){					
+		   			probHPDI ){					
 				
 	# Simulation conditions 
 	allConditions <- expand.grid(I = Icond, J = Jcond, percNoise = noiseCond,
@@ -66,7 +66,7 @@ runSim <- function( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					   beta1pi, beta2pi, 
 					   updatetau, priorvar, priorInclusion, 
 					   global.var, sdRule,
-					   useOrig, origElbo, probHPDI, tau_par )
+					   useOrig, origElbo, probHPDI)
 						 	 
 		
 		# Condition names  

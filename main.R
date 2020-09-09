@@ -34,19 +34,17 @@ sdRule <- TRUE																# Select parameters with S.E. rule
 
 
 # Tuning parameter (bayesPCA - parameters for InverseGamma prior)
-alphaIG <- c(  1, 2, 5, 10, 20, 50, 100, 200 )
-betaIG <- c(  1, 2, 4, 5, 10, 20, 50)
+alphaIG <- c(  1, 2, 5, 10, 20 )
+betaIG <- c(  1, 2, 4, 5, 10 )
 
 
 # Hyperparameters (Stochastic Variable Selection)
 SVS <- TRUE 							# If SVS == FALSE: use HPD intervals
-propSpike <- 1e-3						# proportion of prior 'spike' variance 
+propSpike <- 1e-4						# proportion of prior 'spike' variance 
 priorInclusion <- rep(0.5, D) 			# prior inclusion probabilities 
 beta1pi <- 1 							# For uniform Beta prior set beta1pi = 1
 beta2pi <- 1 							# For uniform Beta prior set beta2pi = 1
 threshold <- 0.50						# Probability threshold to mark elements of W as 0's 
-tau_par <- 0.1							# Value of tau in the case alpha, beta IG = 0 (fixed tau)
-
 
 # Other controls ----------------------------------------------------------------------------------   
 maxiter <- 1e+05						 
@@ -71,8 +69,7 @@ simRes <- runSim( nsim, Icond, Jcond, noiseCond, sparsityCond,
 					SVS, normalise, beta1pi, beta2pi, 
 					updatetau, priorvar, 
 					priorInclusion, global.var, sdRule,
-					useOrig, origElbo, probHPDI, tau_par, 
-					alphaFactor, betaFactor)
+					useOrig, origElbo, probHPDI )
 
 ### RESULTS --------------------------------------------------------------------------------------------
 globalResults <- simRes$globalResults 

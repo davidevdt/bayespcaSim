@@ -7,8 +7,7 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					   propSpike, SVS, normalise, 
 					   beta1pi, beta2pi, 
 					   updatetau, priorvar, priorInclusion, global.var,
-					   sdRule, useOrig = TRUE, origElbo = TRUE, probHPDI, 
-					   tau_par){ 
+					   sdRule, useOrig = TRUE, origElbo = TRUE, probHPDI) { 
 					   	  
 	# Store the results 
 	Tucker <- matrix(0, nrow = (nrow(vbpcaPars) + 1), ncol = nsim ) 
@@ -244,15 +243,9 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 				alphaInvGamma <- vbpcaPars[i, 1]
 				betaInvGamma <- vbpcaPars[i, 2] 
 							
-				if( alphaInvGamma == 0){
-					doPriorvar <- "fixed"
-					doUpdate <- FALSE 
-					doTau <- tau_par
-				} else {
-					doPriorvar <- priorvar 
-					doUpdate <- updatetau
-					doTau <- 1 
-				}
+				doPriorvar <- priorvar 
+				doUpdate <- updatetau
+				doTau <- 1 
 				
 				ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
@@ -280,15 +273,9 @@ estimateModels <- function( nsim, I, J, D, zeroMat, percNoise, varComp,
 					tuckMat <- mod[[1]]
 				}else{
 				
-					if( alphaInvGamma == 0){
-						doPriorvar <- "fixed"
-						doUpdate <- FALSE 
-						doTau <- tau_par 
-					} else {
-						doPriorvar <- priorvar 
-						doUpdate <- updatetau
-						doTau <- 1 
-					}
+					doPriorvar <- priorvar 
+					doUpdate <- updatetau
+					doTau <- 1 
 					
 					ctrl <- bayespca::vbpca_control(center = FALSE, scalecorrection = -1,
 								   svdStart = TRUE, normalise = normalise, 
