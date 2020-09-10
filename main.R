@@ -24,7 +24,7 @@ sparsityCond <- c(0.5, 0.9)					# Prop. Sparsity conditions
 
 # Componenents' Parameters ------------------------------------------------------------------------------
 D = 3										# Number of components   
-varComp <- c(50, 20, 10)					# Variance of principal components
+varComp <- c(200, 100, 50)					# Variance of principal components
 
 # Hyperparameters -------------------------------------------------------------------------
 # Tuning parameters (spca)
