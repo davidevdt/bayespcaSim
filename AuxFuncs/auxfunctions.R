@@ -146,9 +146,13 @@ groupIndex <- function(res, crit = c("Method", "I", "J", "Sparsity", "Noise")){
 
 
 # Function that calculates reconstruction error 
-recErr <- function(Xorig, W, P){
+recErr <- function(Xorig, W, P, rel=TRUE){
 	
 	recErr <- sum( (Xorig - ( Xorig %*% W %*% t(P) ) )^2)	
+	if (rel == TRUE) {
+		Xnorm = sum(Xorig^2)
+		recErr = recErr / Xnorm
+	}
 	recErr
 
 }
