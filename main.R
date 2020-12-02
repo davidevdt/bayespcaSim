@@ -164,7 +164,7 @@ if( plotN == 1 ){
 		# scale_colour_manual(values = c("deepskyblue"), labels=c( 'Average Reconstruction Error') ) +
 		facet_grid(I~Noise+Sparsity, 
 					labeller = labeller(I = I.labs, Noise = noise.labs, Sparsity = sp.labs ), scales = "free_y") + 				
-		ylab("Reconstruction Error") + 
+		ylab("Rel. Reconstruction Error") + 
 		theme(strip.text.x = element_text(colour = "blue")) +
 		theme(strip.text.y = element_text(colour = "blue")) +
 		theme(legend.position = "none") +
@@ -176,7 +176,7 @@ if( plotN == 1 ){
 		legend.text = element_text(face="plain",size=10)	)+ 
 		theme(legend.position = "right") +
 		guides(fill = guide_legend(nrow = 7, override.aes = list(size = 0.5))) + 
-		ggtitle("Reconstruction Error")+
+		ggtitle("Relative Reconstruction Error")+
 		theme(plot.title = element_text(hjust = 0.5, face="bold"))
 		
 }
