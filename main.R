@@ -85,7 +85,7 @@ globalResults <- globalResults %>% filter(
 	Method == "G(20,5)" |
 	Method == "spca"
 )
-
+globalResults$I <- as.numeric(globalResults$I)
 globalAvgMatrix <- simRes$globalAvgMatrix 
 allConditions <- simRes$allConditions
 
